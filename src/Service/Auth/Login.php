@@ -2,13 +2,14 @@
 
 namespace App\Service\Auth;
 
+use App\Helper\Service\Auth;
 use App\Service\Service;
-use App\Model\Tokens;
-use DateTime;
-use Ulid\Ulid;
 
 class Login extends Service
 {
+    use Auth;
+
+
     public function validate(): bool
     {
         if (empty($this->data['username']) || empty($this->data['password'])) {
@@ -21,20 +22,15 @@ class Login extends Service
         $validPassword = env('PASSWORD');
 
         return ($username == $validUsername && $password == $validPassword);
-    }
+
+    }//end validate()
+
 
     public function execute(): array
     {
-        $token = bin2hex(random_bytes(16));
-        $expiresAt = (new DateTime())->modify('+1 hour')
-            ->format('Y-m-d H:i:s');
+        return $this->createToken();
 
-        $tokenRecord = new Tokens();
-        $tokenRecord->id = Ulid::generate()->__toString();
-        $tokenRecord->token = $token;
-        $tokenRecord->expires_at = $expiresAt;
-        $tokenRecord->save();
+    }//end execute()
 
-        return ['token' => $token, 'expires_at' => $expiresAt];
-    }
-}
+
+}//end class

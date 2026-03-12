@@ -284,4 +284,3 @@ class SqlGenerator
 
 
 }//end class
-

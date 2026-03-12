@@ -21,6 +21,7 @@ class Connection {
 
     /**
      * @var null|string $sshTunnel
+     * @phpstan-ignore property.unusedType
      */
     private null|string $sshTunnel = null;
 
@@ -31,11 +32,13 @@ class Connection {
 
     /**
      * @var null|string $username
+     * @phpstan-ignore property.unusedType
      */
     private null|string $username = 'root';
 
     /**
      * @var null|string $password
+     * @phpstan-ignore property.unusedType
      */
     private null|string $password = 'root';
 
@@ -56,15 +59,13 @@ class Connection {
     }//end getInstance()
 
 
-    private function __construct(LoggerInterface|null $logger=null)
+    private function __construct()
     {
         if (is_string($this->sshTunnel)) {
             shell_exec($this->sshTunnel);
         }
 
         $this->db = new PDO($this->dsn, $this->username, $this->password);
-
-        $this->logger = (is_null($logger)) ? new Logger() : $logger;
 
     }//end __construct()
 
@@ -73,16 +74,14 @@ class Connection {
      * @param string $sql
      * @param bool|array<string, mixed> $params
      * @param string $className
-     * @return bool|array<mixed> array of $className
+     * @return bool|array<string, mixed> array of $className
      */
     public function get(string $sql, bool|array $params, string $className): bool|array
     {
-        $this->log($sql, $params);
-        
         $stmt = $this->db->prepare($sql);
 
         try {
-            if (! $stmt->execute($params)) {
+            if (! $stmt->execute($params)) { // @phpstan-ignore argument.type
                 throw new Exception(implode(', ', $stmt->errorInfo()));
             }
         } catch (Exception $e) {
@@ -96,16 +95,14 @@ class Connection {
 
     /**
      * @param string $sql
-     * @param bool|array<string, string> $params
+     * @param bool|array<string, mixed> $params
      */
     public function executeSql(string $sql, bool|array $params=false): void
     {
-        $this->log($sql, $params);
-
         $stmt = $this->db->prepare($sql);
 
         try {
-            if (! $stmt->execute($params)) {
+            if (! $stmt->execute($params)) { // @phpstan-ignore argument.type
                 throw new Exception(implode(', ', $stmt->errorInfo()));
             }
         } catch (Exception $e) {
@@ -139,11 +136,19 @@ class Connection {
 
     }//end lastInsertId()
 
-    protected function log(string $sql, array $params = []): void
+
+    /**
+     * Summary of log
+     * @param string $sql
+     * @param array<string, mixed> $params
+     * @return void
+     */
+    protected function log(string $sql, array $params=[]): void
     {
         $p = json_encode($params);
 
         $this->logger->info("{$sql} :: {$p}");
+
     }//end log()
 
 

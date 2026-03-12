@@ -2,8 +2,8 @@
 
 namespace App\Middleware\Route;
 
+use App\Helper\App;
 use App\Model\Tokens;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -11,12 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Authentication implements MiddlewareInterface
 {
-    private ResponseFactoryInterface $responseFactory;
 
-    public function __construct(ResponseFactoryInterface $responseFactory)
-    {
-        $this->responseFactory = $responseFactory;
-    }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
@@ -24,25 +19,43 @@ class Authentication implements MiddlewareInterface
             return $this->errorResponse();
         }
 
-        // Proceed with the next middleware
+        // Proceed with the next middleware.
         return $handler->handle($request);
-    }
+
+    }//end process()
+
 
     protected function validate(ServerRequestInterface $request): bool
     {
-        $token = $request->getHeaderLine('Authorization');
+        $token = getToken($request);
 
-        $model = Tokens::first([
-            'token' => $token,
-            'expires_at' => ['>', date('Y-m-d H:i:s')],
-        ]);
+        if ($token === null) {
+            return false;
+        }
+
+        $model = Tokens::first(
+            [
+                [
+                    'token',
+                    '=',
+                    $token,
+                ],
+                [
+                    'expires_at',
+                    '>',
+                    date('Y-m-d H:i:s'),
+                ],
+            ]
+        );
 
         return $model instanceof Tokens;
-    }
+
+    }//end validate()
+
 
     protected function errorResponse(): ResponseInterface
     {
-        $response = $this->responseFactory->createResponse(401);
+        $response = App::getApp()->getResponseFactory()->createResponse(401);
         $data = ['error' => 'Unauthorized'];
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
@@ -50,5 +63,8 @@ class Authentication implements MiddlewareInterface
 
         return $response->withStatus(401)
             ->withHeader('Content-Type', 'application/json');
-    }
-}
+
+    }//end errorResponse()
+
+
+}//end class

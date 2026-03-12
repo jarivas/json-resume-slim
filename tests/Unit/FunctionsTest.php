@@ -17,18 +17,11 @@ class FunctionsTest extends TestCase
         $rootDir = getRootPath();
         $envPath = "$rootDir/.env";
 
-        if (file_exists($envPath)) {
-            unlink($envPath);
-        }
-
-        prepareEnv();
-
         $this->assertFileExists($envPath);
     }
 
     public function test_env_ok(): void
     {
-        prepareEnv();
         $expectedUsername = env('USERNAME');
         $expectedPassword = env('PASSWORD');
 

@@ -9,6 +9,13 @@ class Logger extends AbstractLogger
 {
 
 
+    public static function getFilename(): string
+    {
+        return getRootPath().'/logs/app.log';
+
+    }//end getFilename()
+
+
     /**
      * Logs with an arbitrary level.
      *
@@ -26,8 +33,8 @@ class Logger extends AbstractLogger
         $microTime = date('Y-m-d h:i:s.4').$microTime[1];
 
         $line = "{$microTime} :: {$level} :: {$message}\n";
-
-        $fileName = getRootPath().'/logs/app.log';
+        $line = $this->interpolate($line, $context);
+        $fileName = self::getFilename();
 
         if (!file_exists($fileName)) {
             mkdir(dirname($fileName), 0755, true);

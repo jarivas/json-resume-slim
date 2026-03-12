@@ -131,16 +131,16 @@
         },
         {
             "name": "jarivas/sql-models",
-            "version": "1.8.7",
+            "version": "1.9.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jarivas/php-sql-models.git",
-                "reference": "9205bfd138ef4d3be4c3675ec7d217f595b195c6"
+                "reference": "fc72aedb1fee7db481edeb895feaeee1ff743ea7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jarivas/php-sql-models/zipball/9205bfd138ef4d3be4c3675ec7d217f595b195c6",
-                "reference": "9205bfd138ef4d3be4c3675ec7d217f595b195c6",
+                "url": "https://api.github.com/repos/jarivas/php-sql-models/zipball/fc72aedb1fee7db481edeb895feaeee1ff743ea7",
+                "reference": "fc72aedb1fee7db481edeb895feaeee1ff743ea7",
                 "shasum": ""
             },
             "require": {
@@ -175,9 +175,9 @@
             "description": "A simple and light Multi Sql model factory",
             "support": {
                 "issues": "https://github.com/jarivas/php-sql-models/issues",
-                "source": "https://github.com/jarivas/php-sql-models/tree/1.8.7"
+                "source": "https://github.com/jarivas/php-sql-models/tree/1.9.0"
             },
-            "time": "2026-03-12T00:38:28+00:00"
+            "time": "2026-03-12T15:47:49+00:00"
         },
         {
             "name": "justinrainbow/json-schema",

@@ -8,6 +8,8 @@ if ! ./vendor/bin/phpmd src ansi phpmd.xml; then
     exit 2
 fi
 
+./vendor/bin/phpcbf src phpcs.xml
+
 if ! ./vendor/bin/phpcs src phpcs.xml; then
     exit 3
 fi

@@ -2,13 +2,12 @@
 
 namespace App\Controller\Auth;
 
-use App\Service\Auth\Login as Service;
+use App\Service\Auth\Logout as Service;
 use App\Controller\Controller;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Slim\Exception\HttpNotFoundException;
 
-class Login extends Controller
+class Logout extends Controller
 {
 
 
@@ -18,10 +17,6 @@ class Login extends Controller
         array $args
     ): ResponseInterface {
         $service = new Service($request, $response, $args);
-
-        if (!$service->validate()) {
-            throw new HttpNotFoundException($request);
-        }
 
         $result = $service->execute();
 

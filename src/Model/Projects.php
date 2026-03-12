@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace App\Model;
 
 /**
- * @method static bool|Projects first(array<string, mixed> $columnValues)
- * @method static bool|Projects[] get(array<string, mixed> $columnValues = [], int $offset = 0, int $limit = 100, array<string> $columns = []): bool|array
+ * @method static bool|Projects first(array<string, mixed>|array<int, array> $criteria)
+ * @method static bool|Projects last(array<string, mixed>|array<int, array> $criteria)
+ * @method static bool|Projects[] get(array<string, mixed>|array<int, array> $criteria = [], int $offset = 0, int $limit = 100, array<string> $columns = []): bool|array
  */
 class Projects extends Model
 {
@@ -29,6 +30,7 @@ class Projects extends Model
      * @var array<string> $columns
      */
     protected static array $columns = [
+
         'id',
         'name',
         'startDate',
@@ -96,7 +98,4 @@ class Projects extends Model
      * @var ?string $deleted_at
      */
     public ?string $deleted_at;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
-
-
 }//end class
-

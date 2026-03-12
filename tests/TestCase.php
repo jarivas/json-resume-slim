@@ -12,12 +12,6 @@ abstract class TestCase extends BaseTestCase
 {
     protected const BASE_URL = 'http://localhost:8000';
 
-    public static function setUpBeforeClass(): void
-    {
-        require __DIR__ . '/../src/Helper/Functions.php';
-        prepareEnv();
-    }
-
     protected function login(): array
     {
         $response = $this->post('/auth/login', [
@@ -26,6 +20,15 @@ abstract class TestCase extends BaseTestCase
         ]);
 
         return $response['result'];
+    }
+
+    protected function getAuthHeaders(): array
+    {
+        $response = $this->login();
+
+        return [
+            "Authorization: Bearer {$response['token']}",
+        ];
     }
 
     protected function post(string $uri, array $data, array $headers = []): array

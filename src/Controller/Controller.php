@@ -7,6 +7,8 @@ use Psr\Http\Message\ServerRequestInterface;
 
 abstract class Controller
 {
+
+
     /**
      * Summary of __invoke
      * @param ServerRequestInterface $request
@@ -20,6 +22,7 @@ abstract class Controller
         array $args
     ): ResponseInterface;
 
+
     /**
      * Summary of respond
      * @param ResponseInterface $response
@@ -30,7 +33,7 @@ abstract class Controller
     protected function respond(
         ResponseInterface $response,
         array $data,
-        int $status = 200
+        int $status=200
     ): ResponseInterface {
         $json = json_encode($data, JSON_THROW_ON_ERROR);
 
@@ -38,5 +41,8 @@ abstract class Controller
 
         return $response->withStatus($status)
             ->withHeader('Content-Type', 'application/json');
-    }
-}
+
+    }//end respond()
+
+
+}//end class

@@ -3,5 +3,6 @@
   "php.validate.enable": true,
   "php.executablePath": "/usr/local/bin/php",
   "phpcs.executablePath": "/app/vendor/bin/phpcs",
-  "phpstan.rootDir": "/app/vendor/bin/phpstan"
+  "phpstan.rootDir": "/app/vendor/bin/phpstan",
+  "phpmd.rules": "phpmd.xml"
 }

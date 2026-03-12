@@ -1,47 +1,31 @@
 <?php
 
-use App\Helper\Logger;
-use PhpEnv\EnvManager;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
+use PhpEnv\EnvManager;
+use App\Helper\App;
+
 
 function getRootPath(): string
 {
     return dirname(__DIR__, 2);
-}
 
-function prepareEnv(): void
-{
-    $rootDir = getRootPath();
-    $envPath = "$rootDir/.env";
-    if (!file_exists($envPath)) {
-        copy("$rootDir/.env.example", $envPath);
-    }
+}//end getRootPath()
 
-    $data = EnvManager::parse($envPath);
-
-    EnvManager::setArray($data);
-}
 
 function env(string $key): mixed
 {
     return EnvManager::get($key);
-}
+
+}//end env()
+
 
 function getAppLogger(): LoggerInterface
 {
-    global $logger;
+    return App::getLogger();
 
-    if (isset($logger) && $logger instanceof LoggerInterface) {
-        return $logger;
-    }
+}//end getAppLogger()
 
-    return new Logger();
-}
-
-function logHelper(): LoggerInterface
-{
-    return getAppLogger();
-}
 
 /**
  * Summary of logInfo
@@ -49,11 +33,13 @@ function logHelper(): LoggerInterface
  * @param array<mixed> $context
  * @return void
  */
-function logInfo(string $message, array $context = []): void
+function logInfo(string $message, array $context=[]): void
 {
     $logger = getAppLogger();
     $logger->info($message, $context);
-}
+
+}//end logInfo()
+
 
 /**
  * Summary of logError
@@ -61,11 +47,13 @@ function logInfo(string $message, array $context = []): void
  * @param array<mixed> $context
  * @return void
  */
-function logError(string $message, array $context = []): void
+function logError(string $message, array $context=[]): void
 {
     $logger = getAppLogger();
     $logger->error($message, $context);
-}
+
+}//end logError()
+
 
 /**
  * Summary of logWarning
@@ -73,11 +61,13 @@ function logError(string $message, array $context = []): void
  * @param array<mixed> $context
  * @return void
  */
-function logWarning(string $message, array $context = []): void
+function logWarning(string $message, array $context=[]): void
 {
     $logger = getAppLogger();
     $logger->warning($message, $context);
-}
+
+}//end logWarning()
+
 
 /**
  * Summary of logNotice
@@ -85,11 +75,13 @@ function logWarning(string $message, array $context = []): void
  * @param array<mixed> $context
  * @return void
  */
-function logNotice(string $message, array $context = []): void
+function logNotice(string $message, array $context=[]): void
 {
     $logger = getAppLogger();
     $logger->notice($message, $context);
-}
+
+}//end logNotice()
+
 
 /**
  * Summary of logCritical
@@ -97,11 +89,13 @@ function logNotice(string $message, array $context = []): void
  * @param array<mixed> $context
  * @return void
  */
-function logCritical(string $message, array $context = []): void
+function logCritical(string $message, array $context=[]): void
 {
     $logger = getAppLogger();
     $logger->critical($message, $context);
-}
+
+}//end logCritical()
+
 
 /**
  * Summary of logAlert
@@ -109,11 +103,13 @@ function logCritical(string $message, array $context = []): void
  * @param array<mixed> $context
  * @return void
  */
-function logAlert(string $message, array $context = []): void
+function logAlert(string $message, array $context=[]): void
 {
     $logger = getAppLogger();
     $logger->alert($message, $context);
-}
+
+}//end logAlert()
+
 
 /**
  * Summary of logEmergency
@@ -121,11 +117,13 @@ function logAlert(string $message, array $context = []): void
  * @param array<mixed> $context
  * @return void
  */
-function logEmergency(string $message, array $context = []): void
+function logEmergency(string $message, array $context=[]): void
 {
     $logger = getAppLogger();
     $logger->emergency($message, $context);
-}
+
+}//end logEmergency()
+
 
 /**
  * Summary of logDebug
@@ -133,8 +131,26 @@ function logEmergency(string $message, array $context = []): void
  * @param array<mixed> $context
  * @return void
  */
-function logDebug(string $message, array $context = []): void
+function logDebug(string $message, array $context=[]): void
 {
     $logger = getAppLogger();
     $logger->debug($message, $context);
-}
+
+}//end logDebug()
+
+
+function getToken(ServerRequestInterface $request): ?string
+{
+    $authHeader = $request->getHeaderLine('Authorization');
+    if (empty($authHeader)) {
+        return null;
+    }
+
+    // Assuming the token is in the format "Bearer <token>".
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        return $matches[1];
+    }
+
+    return null;
+
+}//end getToken()

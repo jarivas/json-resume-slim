@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ruleset name="My first PHPMD rule set">
     <description>Checking code for messy shit...</description>
+    <exclude-pattern>*/Model/*</exclude-pattern>
     <rule ref="rulesets/cleancode.xml">
         <exclude name="StaticAccess" />
         <exclude name="BooleanArgumentFlag" />

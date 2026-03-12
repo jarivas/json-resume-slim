@@ -7,11 +7,13 @@ use Psr\Http\Message\ServerRequestInterface;
 
 abstract class Service
 {
+
     /**
      * Summary of data
      * @var array<string, mixed>|null
      */
     protected null|array $data = null;
+
 
     /**
      * Summary of __construct
@@ -25,14 +27,18 @@ abstract class Service
         protected array $args
     ) {
         $this->setData();
-    }
+
+    }//end __construct()
+
 
     public function validate(): bool
     {
-        // Default validation logic can be implemented here
-        // Child classes can override this method to provide specific validation
+        // Default validation logic can be implemented here.
+        // Child classes can override this method to provide specific validation.
         return true;
-    }
+
+    }//end validate()
+
 
     /**
      * Summary of execute
@@ -40,11 +46,12 @@ abstract class Service
      */
     abstract public function execute(): array;
 
+
     protected function setData(): void
     {
         $tmp = $this->request->getParsedBody();
         if (is_object($tmp)) {
-            $this->data = (array)$tmp;
+            $this->data = (array) $tmp;
             return;
         }
 
@@ -53,7 +60,7 @@ abstract class Service
             return;
         }
 
-        $rawBody = (string)$this->request->getBody();
+        $rawBody = (string) $this->request->getBody();
         if ($rawBody === '') {
             return;
         }
@@ -64,5 +71,8 @@ abstract class Service
         }
 
         $this->data = $decodedBody;
-    }
-}
+
+    }//end setData()
+
+
+}//end class

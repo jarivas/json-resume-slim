@@ -5,7 +5,7 @@ namespace App\Service\Auth;
 use App\Helper\Service\Auth;
 use App\Service\Service;
 
-class Logout extends Service
+class RefreshToken extends Service
 {
     use Auth;
 
@@ -14,7 +14,11 @@ class Logout extends Service
     {
         $model = $this->getToken();
 
-        return $model->delete() ? ['message' => 'Logged out successfully'] : ['message' => 'Failed to log out'];
+        if (!$model->delete()) {
+            return ['message' => 'Failed to refresh token'];
+        }
+
+        return $this->createToken();
 
     }//end execute()
 
