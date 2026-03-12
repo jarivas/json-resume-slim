@@ -17,7 +17,7 @@ This project provides a backend API foundation for the [JSON Resume](https://jso
 - RESTful API for resume sections (`basics`, `awards`, `education`, `projects`, `work`, etc.)
 - Normalized database model with ULID-like IDs (`char(26)`)
 - JSON columns for complex nested fields (e.g., `profiles`, `keywords`, `highlights`)
-- Token-based authentication (`api/auth/login`, `api/auth/refresh-token`)
+- Token-based authentication (`auth/login`, `auth/refresh-token`)
 - Utility endpoints for ISO data (`country`, `language`, `currency`)
 - Static analysis with PHPStan, PHPCS, and PHPMD
 

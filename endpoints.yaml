@@ -5,7 +5,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/auth/login
+    uri: auth/login
     metadata:
       custom: []
       groupName: Endpoints
@@ -24,12 +24,12 @@ endpoints:
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
-      email:
+      username:
         custom: []
-        name: email
-        description: 'Must be a valid email address.'
+        name: username
+        description: ''
         required: true
-        example: gbailey@example.net
+        example: johndoe
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -47,7 +47,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      email: gbailey@example.net
+      username: johndoe
       password: '|]|{+-'
     fileParameters: []
     responses: []
@@ -60,7 +60,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/auth/refresh-token
+    uri: auth/refresh-token
     metadata:
       custom: []
       groupName: Endpoints
@@ -91,7 +91,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/auth/logout
+    uri: auth/logout
     metadata:
       custom: []
       groupName: Endpoints
@@ -122,7 +122,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/basic
+    uri: basic
     metadata:
       custom: []
       groupName: Endpoints
@@ -346,7 +346,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/basic
+    uri: basic
     metadata:
       custom: []
       groupName: Endpoints
@@ -386,7 +386,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/basic/{basic_id}'
+    uri: 'basic/{basic_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -438,7 +438,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/basic/{basic_id}'
+    uri: 'basic/{basic_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -795,7 +795,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/basic/{basic_id}'
+    uri: 'basic/{basic_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -838,7 +838,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/award
+    uri: award
     metadata:
       custom: []
       groupName: Endpoints
@@ -928,7 +928,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/award
+    uri: award
     metadata:
       custom: []
       groupName: Endpoints
@@ -968,7 +968,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/award/{award_id}'
+    uri: 'award/{award_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -1070,7 +1070,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/award/{award_id}'
+    uri: 'award/{award_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -1113,7 +1113,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/certificate
+    uri: certificate
     metadata:
       custom: []
       groupName: Endpoints
@@ -1203,7 +1203,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/certificate
+    uri: certificate
     metadata:
       custom: []
       groupName: Endpoints
@@ -1243,7 +1243,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/certificate/{certificate_id}'
+    uri: 'certificate/{certificate_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -1345,7 +1345,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/certificate/{certificate_id}'
+    uri: 'certificate/{certificate_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -1388,7 +1388,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/education
+    uri: education
     metadata:
       custom: []
       groupName: Endpoints
@@ -1540,7 +1540,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/education
+    uri: education
     metadata:
       custom: []
       groupName: Endpoints
@@ -1580,7 +1580,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/education/{education_id}'
+    uri: 'education/{education_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -1744,7 +1744,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/education/{education_id}'
+    uri: 'education/{education_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -1787,7 +1787,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/interest
+    uri: interest
     metadata:
       custom: []
       groupName: Endpoints
@@ -1855,7 +1855,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/interest
+    uri: interest
     metadata:
       custom: []
       groupName: Endpoints
@@ -1895,7 +1895,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/interest/{interest_id}'
+    uri: 'interest/{interest_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -1975,7 +1975,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/interest/{interest_id}'
+    uri: 'interest/{interest_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -2018,7 +2018,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/language
+    uri: language
     metadata:
       custom: []
       groupName: Endpoints
@@ -2084,7 +2084,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/language
+    uri: language
     metadata:
       custom: []
       groupName: Endpoints
@@ -2124,7 +2124,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/language/{language_id}'
+    uri: 'language/{language_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -2202,7 +2202,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/language/{language_id}'
+    uri: 'language/{language_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -2245,7 +2245,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/project
+    uri: project
     metadata:
       custom: []
       groupName: Endpoints
@@ -2361,7 +2361,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/project
+    uri: project
     metadata:
       custom: []
       groupName: Endpoints
@@ -2401,7 +2401,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/project/{project_id}'
+    uri: 'project/{project_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -2529,7 +2529,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/project/{project_id}'
+    uri: 'project/{project_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -2572,7 +2572,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/publication
+    uri: publication
     metadata:
       custom: []
       groupName: Endpoints
@@ -2674,7 +2674,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/publication
+    uri: publication
     metadata:
       custom: []
       groupName: Endpoints
@@ -2714,7 +2714,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/publication/{publication_id}'
+    uri: 'publication/{publication_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -2828,7 +2828,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/publication/{publication_id}'
+    uri: 'publication/{publication_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -2871,7 +2871,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/reference
+    uri: reference
     metadata:
       custom: []
       groupName: Endpoints
@@ -2937,7 +2937,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/reference
+    uri: reference
     metadata:
       custom: []
       groupName: Endpoints
@@ -2977,7 +2977,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/reference/{reference_id}'
+    uri: 'reference/{reference_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -3055,7 +3055,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/reference/{reference_id}'
+    uri: 'reference/{reference_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -3098,7 +3098,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/skill
+    uri: skill
     metadata:
       custom: []
       groupName: Endpoints
@@ -3178,7 +3178,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/skill
+    uri: skill
     metadata:
       custom: []
       groupName: Endpoints
@@ -3218,7 +3218,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/skill/{skill_id}'
+    uri: 'skill/{skill_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -3310,7 +3310,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/skill/{skill_id}'
+    uri: 'skill/{skill_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -3353,7 +3353,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/volunteer
+    uri: volunteer
     metadata:
       custom: []
       groupName: Endpoints
@@ -3481,7 +3481,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/volunteer
+    uri: volunteer
     metadata:
       custom: []
       groupName: Endpoints
@@ -3521,7 +3521,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/volunteer/{volunteer_id}'
+    uri: 'volunteer/{volunteer_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -3661,7 +3661,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/volunteer/{volunteer_id}'
+    uri: 'volunteer/{volunteer_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -3704,7 +3704,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/work
+    uri: work
     metadata:
       custom: []
       groupName: Endpoints
@@ -3832,7 +3832,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/work
+    uri: work
     metadata:
       custom: []
       groupName: Endpoints
@@ -3872,7 +3872,7 @@ endpoints:
     custom: []
     httpMethods:
       - PATCH
-    uri: 'api/work/{work_id}'
+    uri: 'work/{work_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -4012,7 +4012,7 @@ endpoints:
     custom: []
     httpMethods:
       - DELETE
-    uri: 'api/work/{work_id}'
+    uri: 'work/{work_id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -4055,7 +4055,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/iso/country
+    uri: iso/country
     metadata:
       custom: []
       groupName: Endpoints
@@ -4095,7 +4095,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/iso/language
+    uri: iso/language
     metadata:
       custom: []
       groupName: Endpoints
@@ -4135,7 +4135,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: api/iso/currency
+    uri: iso/currency
     metadata:
       custom: []
       groupName: Endpoints
@@ -4175,7 +4175,7 @@ endpoints:
     custom: []
     httpMethods:
       - POST
-    uri: api/chat
+    uri: chat
     metadata:
       custom: []
       groupName: Endpoints

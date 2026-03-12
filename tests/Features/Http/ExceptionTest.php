@@ -7,6 +7,8 @@ use App\Helper\Logger;
 
 class ExceptionTest extends TestCase
 {
+
+
     public function test_HttpNotFoundException(): void
     {
         $fileName = Logger::getFilename();
@@ -14,7 +16,10 @@ class ExceptionTest extends TestCase
         $size = filesize($fileName);
         $this->get('/non-existing-route');
         $sizeAfter = filesize($fileName);
-        
+
         $this->assertSame($size, $sizeAfter);
-    }
-}
+
+    }//end test_HttpNotFoundException()
+
+
+}//end class

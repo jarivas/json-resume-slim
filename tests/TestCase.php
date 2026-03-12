@@ -12,54 +12,69 @@ abstract class TestCase extends BaseTestCase
 {
     protected const BASE_URL = 'http://localhost:8000';
 
+
     protected function login(): array
     {
-        $response = $this->post('/auth/login', [
-            'username' => env('USERNAME'),
-            'password' => env('PASSWORD'),
-        ]);
+        $response = $this->post(
+            '/auth/login',
+            [
+                'username' => env('USERNAME'),
+                'password' => env('PASSWORD'),
+            ]
+        );
 
         return $response['result'];
-    }
+
+    }//end login()
+
 
     protected function getAuthHeaders(): array
     {
         $response = $this->login();
 
-        return [
-            "Authorization: Bearer {$response['token']}",
-        ];
-    }
+        return ["Authorization: Bearer {$response['token']}"];
 
-    protected function post(string $uri, array $data, array $headers = []): array
+    }//end getAuthHeaders()
+
+
+    protected function post(string $uri, array $data, array $headers=[]): array
     {
         $client = new Post(self::BASE_URL);
         $response = $client->sendJson($uri, $data, $headers);
 
         return $response;
-    }
 
-    protected function get(string $uri, array $headers = []): array
+    }//end post()
+
+
+    protected function get(string $uri, array $headers=[]): array
     {
         $client = new Get(self::BASE_URL);
-        $response = $client->send($uri, $headers);
+        $response = $client->send($uri, null, $headers, true);
 
         return $response;
-    }
 
-    protected function patch(string $uri, array $data, array $headers = []): array
+    }//end get()
+
+
+    protected function patch(string $uri, array $data, array $headers=[]): array
     {
         $client = new Patch(self::BASE_URL);
         $response = $client->sendJson($uri, $data, $headers);
 
         return $response;
-    }
 
-    protected function delete(string $uri, array $headers = []): array
+    }//end patch()
+
+
+    protected function delete(string $uri, array $headers=[]): array
     {
         $client = new Delete(self::BASE_URL);
-        $response = $client->send($uri, $headers);
+        $response = $client->send($uri, null, $headers, true);
 
         return $response;
-    }
-}
+
+    }//end delete()
+
+
+}//end class

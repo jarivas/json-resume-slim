@@ -6,6 +6,8 @@ use Tests\TestCase;
 
 class RefreshTokenTest extends TestCase
 {
+
+
     public function test_refresh_token_ok(): void
     {
         $headers = $this->getAuthHeaders();
@@ -13,7 +15,9 @@ class RefreshTokenTest extends TestCase
 
         $this->assertArrayHasKey('token', $response);
         $this->assertArrayHasKey('expires_at', $response);
-    }
+
+    }//end test_refresh_token_ok()
+
 
     public function test_refresh_token_invalid_token(): void
     {
@@ -22,7 +26,9 @@ class RefreshTokenTest extends TestCase
 
         $this->assertArrayHasKey('error', $response);
         $this->assertEquals('Unauthorized', $response['error']);
-    }
+
+    }//end test_refresh_token_invalid_token()
+
 
     public function test_refresh_token_missing_token(): void
     {
@@ -30,12 +36,17 @@ class RefreshTokenTest extends TestCase
 
         $this->assertArrayHasKey('error', $response);
         $this->assertEquals('Unauthorized', $response['error']);
-    }
+
+    }//end test_refresh_token_missing_token()
+
 
     private function makeRequest(array $headers): array
     {
         $response = $this->post('/auth/refresh-token', [], $headers);
 
         return $response['result'];
-    }
-}
+
+    }//end makeRequest()
+
+
+}//end class

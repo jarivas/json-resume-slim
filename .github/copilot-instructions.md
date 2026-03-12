@@ -14,11 +14,11 @@
 ## API contract conventions
 - Endpoint contract is documented in `endpoints.yaml`; use it to implement/verify routes.
 - Resource pattern is consistent:
-  - collection: `POST /api/<resource>`, `GET /api/<resource>`
-  - item: `PATCH /api/<resource>/{id}`, `DELETE /api/<resource>/{id}`
-  - examples: `api/basic`, `api/award/{award_id}`, `api/work/{work_id}`
-- Auth-related endpoints exist: `api/auth/login`, `api/auth/refresh-token`, `api/auth/logout`.
-- Additional utility endpoints are documented: `api/iso/country`, `api/iso/language`, `api/iso/currency`, `api/chat`.
+  - collection: `POST /<resource>`, `GET /<resource>`
+  - item: `PATCH /<resource>/{id}`, `DELETE /<resource>/{id}`
+  - examples: `basic`, `award/{award_id}`, `work/{work_id}`
+- Auth-related endpoints exist: `auth/login`, `auth/refresh-token`, `auth/logout`.
+- Additional utility endpoints are documented: `iso/country`, `iso/language`, `iso/currency`, `chat`.
 - The endpoint file includes generated examples where `controller`, `method`, and `route` are `null`; do not treat those fields as implementation metadata.
 
 ## Validation and schema alignment

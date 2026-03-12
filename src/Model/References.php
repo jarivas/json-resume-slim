@@ -14,7 +14,7 @@ class References extends Model
     /**
      * @var string $tableName
      */
-    protected static string $tableName = 'references';
+    protected static string $tableName = '`references`';
 
     /**
      * @var string $primaryKey
