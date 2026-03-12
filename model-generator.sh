@@ -1,0 +1,1 @@
+php commands/ModelGenerator.php 

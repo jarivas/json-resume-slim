@@ -1,0 +1,23 @@
+{
+	"name": "json-resume-slim",
+
+	"dockerComposeFile": [
+		"docker-compose.yml"
+	],
+	"service": "dev",
+	"workspaceFolder": "/app",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"GitHub.copilot-chat",
+				"DEVSENSE.phptools-vscode",
+				"ecodes.vscode-phpmd",
+				"shevaua.phpcs",
+				"SanderRonde.phpstan-vscode"
+			],
+			"settings": {
+				"terminal.integrated.defaultProfile.linux": "bash"
+			}
+		}
+	}
+}
