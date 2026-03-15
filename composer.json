@@ -13,7 +13,9 @@
         "psr/log": "^3.0",
         "jarivas/http-client": "^1.4",
         "nyholm/psr7": "^1.8",
-        "nyholm/psr7-server": "^1.1"
+        "nyholm/psr7-server": "^1.1",
+        "gemini-api-php/client": "^1.7",
+        "symfony/http-client": "^8.0"
     },
     "autoload": {
         "psr-4": {
@@ -31,5 +33,10 @@
         "phpstan/phpstan": "^2.1",
         "squizlabs/php_codesniffer": "^4.0",
         "symfony/var-dumper": "^8.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     }
 }

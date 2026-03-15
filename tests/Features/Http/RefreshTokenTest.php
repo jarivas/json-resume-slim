@@ -24,8 +24,7 @@ class RefreshTokenTest extends TestCase
         $headers = ['Authorization' => 'invalidtoken'];
         $response = $this->makeRequest($headers);
 
-        $this->assertArrayHasKey('error', $response);
-        $this->assertEquals('Unauthorized', $response['error']);
+        $this->assertErrorContract($response, 401, 'Unauthorized');
 
     }//end test_refresh_token_invalid_token()
 
@@ -34,8 +33,7 @@ class RefreshTokenTest extends TestCase
     {
         $response = $this->makeRequest([]);
 
-        $this->assertArrayHasKey('error', $response);
-        $this->assertEquals('Unauthorized', $response['error']);
+        $this->assertErrorContract($response, 401, 'Unauthorized');
 
     }//end test_refresh_token_missing_token()
 

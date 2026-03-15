@@ -30,7 +30,6 @@ class Educations extends Model
      * @var array<string> $columns
      */
     protected static array $columns = [
-
         'id',
         'institution',
         'url',
@@ -116,4 +115,8 @@ class Educations extends Model
      * @var ?string $deleted_at
      */
     public ?string $deleted_at;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+
 }//end class
+
+

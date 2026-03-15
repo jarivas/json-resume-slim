@@ -30,7 +30,6 @@ class Works extends Model
      * @var array<string> $columns
      */
     protected static array $columns = [
-
         'id',
         'name',
         'position',
@@ -104,4 +103,8 @@ class Works extends Model
      * @var ?string $deleted_at
      */
     public ?string $deleted_at;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+
 }//end class
+
+

@@ -24,8 +24,7 @@ class LogoutTest extends TestCase
         $headers = ['Authorization' => 'invalidtoken'];
         $response = $this->makeRequest($headers);
 
-        $this->assertArrayHasKey('error', $response);
-        $this->assertEquals('Unauthorized', $response['error']);
+        $this->assertErrorContract($response, 401, 'Unauthorized');
 
     }//end test_logout_invalid_token()
 

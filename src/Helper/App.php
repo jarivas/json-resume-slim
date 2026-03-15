@@ -39,9 +39,9 @@ class App
     {
         self::$logger = new Logger();
         self::$app = AppFactory::create();
-        self::configureErrorHandling();
         self::addMiddleware();
         self::registerRoutes();
+        self::configureErrorHandling();
         self::$app->run();
 
     }//end prepare()
@@ -67,12 +67,9 @@ class App
 
     protected static function configureErrorHandling(): void
     {
-        $appEnv = strtolower((string) (env('APP_ENV') ?? 'production'));
-        $displayErrorDetails = env('APP_DISPLAY_ERROR_DETAILS');
-
-        $displayErrorDetails = ($displayErrorDetails === null) ? ($appEnv !== 'production') : filter_var($displayErrorDetails, FILTER_VALIDATE_BOOL);
-
-        $logErrorDetails = $displayErrorDetails;
+        $appDebugErrors = env('APP_DEBUG_ERRORS');
+        $displayErrorDetails = filter_var($appDebugErrors, FILTER_VALIDATE_BOOL) === true;
+        $logErrorDetails = true;
 
         $errorMiddleware = self::$app->addErrorMiddleware(
             $displayErrorDetails,

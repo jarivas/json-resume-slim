@@ -12,8 +12,7 @@ class ReferenceTest extends TestCase
     {
         $response = $this->post('/reference', $this->getCreatePayload());
 
-        $this->assertArrayHasKey('error', $response['result']);
-        $this->assertEquals('Unauthorized', $response['result']['error']);
+        $this->assertErrorContract($response['result'], 401, 'Unauthorized');
 
     }//end test_reference_requires_authentication()
 
@@ -29,8 +28,7 @@ class ReferenceTest extends TestCase
         $id = $created['id'];
 
         $list = $this->get('/reference', $headers)['result'];
-        $this->assertArrayHasKey('items', $list);
-        $this->assertIsArray($list['items']);
+        $this->assertItemsCollection($list);
 
         $current = $this->get("/reference/$id", $headers)['result'];
         $this->assertEquals($id, $current['id']);
@@ -45,12 +43,10 @@ class ReferenceTest extends TestCase
         $this->assertEquals('Updated recommendation text', $updated['reference']);
 
         $deleted = $this->delete("/reference/$id", $headers)['result'];
-        $this->assertArrayHasKey('message', $deleted);
-        $this->assertEquals('Deleted successfully', $deleted['message']);
+        $this->assertDeletedSuccessfully($deleted);
 
         $notFound = $this->get("/reference/$id", $headers)['result'];
-        $this->assertArrayHasKey('message', $notFound);
-        $this->assertEquals('404 Not Found', $notFound['message']);
+        $this->assertErrorContract($notFound, 404, 'Not Found');
 
     }//end test_reference_crud_flow()
 
@@ -68,8 +64,7 @@ class ReferenceTest extends TestCase
             $headers
         )['result'];
 
-        $this->assertArrayHasKey('message', $response);
-        $this->assertEquals('404 Not Found', $response['message']);
+        $this->assertErrorContract($response, 404, 'Not Found');
 
     }//end test_reference_invalid_payload()
 

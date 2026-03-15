@@ -66,7 +66,6 @@ class Connection {
         }
 
         $this->db = new PDO($this->dsn, $this->username, $this->password);
-
     }//end __construct()
 
 
@@ -77,7 +76,7 @@ class Connection {
      * @return bool|array<string, mixed> array of $className
      */
     public function get(string $sql, bool|array $params, string $className): bool|array
-    {
+    {        
         $stmt = $this->db->prepare($sql);
 
         try {
@@ -136,20 +135,20 @@ class Connection {
 
     }//end lastInsertId()
 
-
     /**
      * Summary of log
      * @param string $sql
      * @param array<string, mixed> $params
      * @return void
      */
-    protected function log(string $sql, array $params=[]): void
+    protected function log(string $sql, array $params = []): void
     {
         $p = json_encode($params);
 
         $this->logger->info("{$sql} :: {$p}");
-
     }//end log()
 
 
 }//end class
+
+

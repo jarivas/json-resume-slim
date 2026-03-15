@@ -11,12 +11,12 @@ class SqlGenerator
     /**
      * @param Dbms $dbms
      * @param string $tableName
-     * @param array<string, string> $params
+    * @param array<string, mixed> $params
      * @param array<string> $selectedColumns
      * @param array<int, array<string, string>> $joins
-     * @param array<int, array<string, string>> $where
+    * @param array<int, array<string, mixed>> $where
      * @param string $groupBy
-     * @param array<int, array<string, string>> $having
+    * @param array<int, array<string, mixed>> $having
      * @param array<string, string> $orderBy
      * @param int $limit
      * @param int $offset
@@ -47,9 +47,9 @@ class SqlGenerator
 
         $o = self::generateOrderBy($dbms, $orderBy);
 
-        $lof = self::generateLimitOffset($dbms,$limit, $offset);
+        $lof = self::generateLimitOffset($dbms, $limit, $offset);
 
-        $tableName = ($dbms != Dbms::Pgsql) ? $tableName : '"'.$tableName.'"';
+        $tableName = self::quoteQualifiedIdentifier($dbms, $tableName);
 
         return "SELECT $c FROM $tableName $j$w$g$h$o$lof";
 
@@ -59,7 +59,7 @@ class SqlGenerator
     /**
      * @param Dbms $dbms
      * @param string $tableName
-     * @param array<string, string> $params
+    * @param array<string, mixed> $params
      * @return string
      */
     public static function generateInsert(
@@ -72,7 +72,7 @@ class SqlGenerator
         $columns = self::generateColumns($dbms, $cols);
         $values  = self::generateValues($cols);
 
-        $tableName = ($dbms != Dbms::Pgsql) ? $tableName : '"'.$tableName.'"';
+        $tableName = self::quoteQualifiedIdentifier($dbms, $tableName);
 
         return "INSERT INTO $tableName ($columns) VALUES (:$values);";
 
@@ -82,7 +82,7 @@ class SqlGenerator
     /**
      * @param Dbms $dbms
      * @param string $tableName
-     * @param array<string, string> $params
+    * @param array<string, mixed> $params
      * @param array<int, array<string, mixed>> $where
      * @return string
      */
@@ -97,7 +97,7 @@ class SqlGenerator
 
         $w = self::generateConditions($dbms, 'WHERE', $where, $params);
 
-        $tableName = ($dbms != Dbms::Pgsql) ? $tableName : '"'.$tableName.'"';
+        $tableName = self::quoteQualifiedIdentifier($dbms, $tableName);
 
         return "UPDATE $tableName SET $s$w";
 
@@ -107,7 +107,7 @@ class SqlGenerator
     /**
      * @param Dbms $dbms
      * @param string $tableName
-     * @param array<string, string> $params
+    * @param array<string, mixed> $params
      * @param array<int, array<string, mixed>> $where
      * @return string
      */
@@ -120,7 +120,7 @@ class SqlGenerator
     {
         $w = self::generateConditions($dbms, 'WHERE', $where, $params);
 
-        $tableName = ($dbms != Dbms::Pgsql) ? $tableName : '"'.$tableName.'"';
+        $tableName = self::quoteQualifiedIdentifier($dbms, $tableName);
 
         return "DELETE FROM $tableName $w";
 
@@ -134,7 +134,13 @@ class SqlGenerator
      */
     protected static function generateColumns(Dbms $dbms, array $cols): string
     {
-        return ($dbms != Dbms::Pgsql) ? implode(', ', $cols) : '"'.implode('", "', $cols).'"';
+        $result = [];
+
+        foreach ($cols as $col) {
+            $result[] = self::quoteSelectExpression($dbms, $col);
+        }
+
+        return implode(', ', $result);
 
     }//end generateColumns()
 
@@ -150,12 +156,15 @@ class SqlGenerator
             return '';
         }
 
-        $sql  = '';
-        $isPg = ($dbms == Dbms::Pgsql);
+        $sql = '';
 
         foreach ($joins as $j) {
-            $format = $isPg ? ' %s JOIN %s ON "%s" = "%s"' : ' %s JOIN %s ON %s = "%s"';
-            $sql   .= sprintf($format, $j['type'], $j['tableName'], $j['onCol1'], $j['onCol2']);
+            $type = self::normalizeJoinType((string) $j['type']);
+            $tableName = self::quoteQualifiedIdentifier($dbms, $j['tableName']);
+            $onCol1 = self::quoteQualifiedIdentifier($dbms, $j['onCol1']);
+            $onCol2 = self::quoteQualifiedIdentifier($dbms, $j['onCol2']);
+
+            $sql .= sprintf(' %s JOIN %s ON %s = %s', $type, $tableName, $onCol1, $onCol2);
         }
 
         return $sql;
@@ -166,8 +175,8 @@ class SqlGenerator
     /**
      * @param Dbms $dbms
      * @param string $conditionType
-     * @param array<int, array<string, string>> $conditions
-     * @param array<string, string> $params
+    * @param array<int, array<string, mixed>> $conditions
+    * @param array<string, mixed> $params
      * @return string
      */
     protected static function generateConditions(
@@ -183,15 +192,45 @@ class SqlGenerator
         $sql = '';
 
         foreach ($conditions as $i => $c) {
-            $operator = $c['operator'];
-            $col      = ($dbms != Dbms::Pgsql) ? $c['column'] : '"'.$c['column'].'"';
-            $conditionOperator = empty($sql) ? $conditionType : $c['condition_operator'];
+            $operator = self::normalizeComparisonOperator((string) $c['operator']);
+            $colName  = (string) $c['column'];
+            $col      = self::quoteQualifiedIdentifier($dbms, $colName);
+            $conditionOperator = empty($sql)
+                ? strtoupper($conditionType)
+                : self::normalizeConditionOperator((string) $c['condition_operator']);
+            $paramBase = self::buildParamName($colName, $i);
 
-            if ($operator != 'IN') {
-                $sql .= sprintf(' %s %s %s :%s%s', $conditionOperator, $col, $operator, $c['column'], $i);
-                $params[$c['column'].$i] = $c['value'];
+            if ($operator !== 'IN' && $operator !== 'NOT IN') {
+                $sql .= sprintf(' %s %s %s :%s', $conditionOperator, $col, $operator, $paramBase);
+                $params[$paramBase] = $c['value'];
             } else {
-                $sql .= sprintf(' %s %s IN %s', $conditionOperator, $col, $c['value']);
+                $value = $c['value'];
+
+                if (!is_array($value)) {
+                    $sql .= sprintf(' %s %s %s (:%s)', $conditionOperator, $col, $operator, $paramBase);
+                    $params[$paramBase] = $value;
+                    continue;
+                }
+
+                if (empty($value)) {
+                    $sql .= sprintf(' %s 1 = 0', $conditionOperator);
+                    continue;
+                }
+
+                $inPlaceholders = [];
+                foreach ($value as $k => $entry) {
+                    $paramName = "{$paramBase}_{$k}";
+                    $inPlaceholders[] = ':' . $paramName;
+                    $params[$paramName] = $entry;
+                }
+
+                $sql .= sprintf(
+                    ' %s %s %s (%s)',
+                    $conditionOperator,
+                    $col,
+                    $operator,
+                    implode(', ', $inPlaceholders)
+                );
             }
         }
 
@@ -211,14 +250,16 @@ class SqlGenerator
             return '';
         }
 
-        return ($dbms != Dbms::Pgsql) ? " GROUP BY $groupBy" : " GROUP BY \"$groupBy\"";
+        $groupBy = self::quoteQualifiedIdentifier($dbms, $groupBy);
+
+        return " GROUP BY $groupBy";
 
     }//end generateGroupBy()
 
 
     protected static function generateLimitOffset(Dbms $dbms, int $limit=100, int $offset=0): string
     {
-        return ($dbms != Dbms::Mssql) ? " LIMIT $limit OFFSET $offset" : "OFFSET $offset ROWS FETCH FIRST $limit ROWS ONLY";
+        return ($dbms != Dbms::Mssql) ? " LIMIT $limit OFFSET $offset" : " OFFSET $offset ROWS FETCH FIRST $limit ROWS ONLY";
 
     }//end generateLimitOffset()
 
@@ -241,11 +282,17 @@ class SqlGenerator
      */
     protected static function generateOrderBy(Dbms $dbms, array $orderBy): string
     {
+        if (empty($orderBy)) {
+            return '';
+        }
+
         $sql = ' ORDER BY ';
 
         foreach ($orderBy as $col => $direction) {
-            $col = ($dbms != Dbms::Pgsql) ? $col : '"'.$col.'"';
-            $sql .= "$col $direction ";
+            $col = self::quoteQualifiedIdentifier($dbms, $col);
+            $dir = strtoupper(trim($direction));
+            $dir = in_array($dir, ['ASC', 'DESC'], true) ? $dir : 'ASC';
+            $sql .= "$col $dir ";
         }
 
         return $sql;
@@ -271,11 +318,10 @@ class SqlGenerator
      */
     protected static function generateSet(Dbms $dbms, array $cols): string
     {
-        $sql  = '';
-        $isPg = ($dbms == Dbms::Pgsql);
+        $sql = '';
 
         foreach ($cols as $c) {
-            $sql .= $isPg ? " \"$c\" = :$c," : " $c = :$c,";
+            $sql .= ' '.self::quoteQualifiedIdentifier($dbms, $c).' = :'.$c.',';
         }
 
         return substr($sql, 0, -1);
@@ -283,4 +329,149 @@ class SqlGenerator
     }//end generateSet()
 
 
+    protected static function quoteSelectExpression(Dbms $dbms, string $expression): string
+    {
+        $expression = trim($expression);
+
+        if ($expression === '*') {
+            return $expression;
+        }
+
+        if (str_contains($expression, '(') || str_contains($expression, ')')) {
+            return $expression;
+        }
+
+        if (preg_match('/\s+AS\s+/i', $expression) === 1) {
+            $parts = preg_split('/\s+AS\s+/i', $expression);
+            if (is_array($parts) && count($parts) === 2) {
+                return self::quoteQualifiedIdentifier($dbms, trim($parts[0]))
+                    . ' AS '
+                    . self::quoteQualifiedIdentifier($dbms, trim($parts[1]));
+            }
+        }
+
+        return self::quoteQualifiedIdentifier($dbms, $expression);
+
+    }//end quoteSelectExpression()
+
+
+    protected static function quoteQualifiedIdentifier(Dbms $dbms, string $identifier): string
+    {
+        $identifier = trim($identifier);
+
+        if ($identifier === '*') {
+            return $identifier;
+        }
+
+        if (str_contains($identifier, '.')) {
+            $parts = explode('.', $identifier);
+            $quotedParts = [];
+
+            foreach ($parts as $part) {
+                $quotedParts[] = self::quoteIdentifier($dbms, trim($part));
+            }
+
+            return implode('.', $quotedParts);
+        }
+
+        return self::quoteIdentifier($dbms, $identifier);
+
+    }//end quoteQualifiedIdentifier()
+
+
+    protected static function quoteIdentifier(Dbms $dbms, string $identifier): string
+    {
+        if ($identifier === '*') {
+            return $identifier;
+        }
+
+        if (self::isAlreadyQuoted($identifier)) {
+            return $identifier;
+        }
+
+        return match ($dbms) {
+            Dbms::Mysql => '`'.$identifier.'`',
+            Dbms::Mssql => '['.$identifier.']',
+            default => '"'.$identifier.'"',
+        };
+
+    }//end quoteIdentifier()
+
+
+    protected static function isAlreadyQuoted(string $identifier): bool
+    {
+        return (
+            (str_starts_with($identifier, '`') && str_ends_with($identifier, '`'))
+            || (str_starts_with($identifier, '"') && str_ends_with($identifier, '"'))
+            || (str_starts_with($identifier, '[') && str_ends_with($identifier, ']'))
+        );
+
+    }//end isAlreadyQuoted()
+
+
+    protected static function buildParamName(string $column, int $index): string
+    {
+        $sanitized = preg_replace('/[^a-zA-Z0-9_]/', '_', $column);
+        $sanitized = is_string($sanitized) ? $sanitized : 'param';
+
+        return $sanitized.$index;
+
+    }//end buildParamName()
+
+
+    protected static function normalizeJoinType(string $joinType): string
+    {
+        $normalized = strtoupper(trim($joinType));
+        $allowed = [
+            'JOIN',
+            'INNER JOIN',
+            'LEFT JOIN',
+            'LEFT OUTER JOIN',
+            'RIGHT JOIN',
+            'RIGHT OUTER JOIN',
+            'FULL JOIN',
+            'FULL OUTER JOIN',
+            'CROSS JOIN',
+        ];
+
+        return in_array($normalized, $allowed, true) ? $normalized : 'JOIN';
+
+    }//end normalizeJoinType()
+
+
+    protected static function normalizeConditionOperator(string $conditionOperator): string
+    {
+        $normalized = strtoupper(trim($conditionOperator));
+
+        return in_array($normalized, ['AND', 'OR'], true) ? $normalized : 'AND';
+
+    }//end normalizeConditionOperator()
+
+
+    protected static function normalizeComparisonOperator(string $operator): string
+    {
+        $normalized = strtoupper(trim($operator));
+
+        $allowed = [
+            '=',
+            '!=',
+            '<>',
+            '<',
+            '<=',
+            '>',
+            '>=',
+            'LIKE',
+            'NOT LIKE',
+            'IN',
+            'NOT IN',
+            'IS',
+            'IS NOT',
+        ];
+
+        return in_array($normalized, $allowed, true) ? $normalized : '=';
+
+    }//end normalizeComparisonOperator()
+
+
 }//end class
+

@@ -11,6 +11,8 @@ services:
             mariadb:
                 condition: service_healthy
         command: sh -c "while true; do sleep 3600; done"
+        networks:
+            - json-resume
 
     mariadb:
         image: mariadb:11.4
@@ -27,3 +29,8 @@ services:
             start_period: 10s
         tmpfs:
             - /var/lib/mysql:rw,noexec,nosuid,size=256m
+        networks:
+            - json-resume
+networks:
+    json-resume:
+        external: true

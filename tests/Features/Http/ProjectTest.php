@@ -12,8 +12,7 @@ class ProjectTest extends TestCase
     {
         $response = $this->post('/project', $this->getCreatePayload());
 
-        $this->assertArrayHasKey('error', $response['result']);
-        $this->assertEquals('Unauthorized', $response['result']['error']);
+        $this->assertErrorContract($response['result'], 401, 'Unauthorized');
 
     }//end test_project_requires_authentication()
 
@@ -30,8 +29,7 @@ class ProjectTest extends TestCase
         $id = $created['id'];
 
         $list = $this->get('/project', $headers)['result'];
-        $this->assertArrayHasKey('items', $list);
-        $this->assertIsArray($list['items']);
+        $this->assertItemsCollection($list);
 
         $current = $this->get("/project/$id", $headers)['result'];
         $this->assertEquals($id, $current['id']);
@@ -55,12 +53,10 @@ class ProjectTest extends TestCase
         $this->assertStringStartsWith('2025-09-01', $updated['endDate']);
 
         $deleted = $this->delete("/project/$id", $headers)['result'];
-        $this->assertArrayHasKey('message', $deleted);
-        $this->assertEquals('Deleted successfully', $deleted['message']);
+        $this->assertDeletedSuccessfully($deleted);
 
         $notFound = $this->get("/project/$id", $headers)['result'];
-        $this->assertArrayHasKey('message', $notFound);
-        $this->assertEquals('404 Not Found', $notFound['message']);
+        $this->assertErrorContract($notFound, 404, 'Not Found');
 
     }//end test_project_crud_flow()
 
@@ -81,8 +77,7 @@ class ProjectTest extends TestCase
             $headers
         )['result'];
 
-        $this->assertArrayHasKey('message', $response);
-        $this->assertEquals('404 Not Found', $response['message']);
+        $this->assertErrorContract($response, 404, 'Not Found');
 
     }//end test_project_invalid_payload()
 

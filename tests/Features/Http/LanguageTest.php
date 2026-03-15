@@ -12,8 +12,7 @@ class LanguageTest extends TestCase
     {
         $response = $this->post('/language', $this->getCreatePayload());
 
-        $this->assertArrayHasKey('error', $response['result']);
-        $this->assertEquals('Unauthorized', $response['result']['error']);
+        $this->assertErrorContract($response['result'], 401, 'Unauthorized');
 
     }//end test_language_requires_authentication()
 
@@ -29,8 +28,7 @@ class LanguageTest extends TestCase
         $id = $created['id'];
 
         $list = $this->get('/language', $headers)['result'];
-        $this->assertArrayHasKey('items', $list);
-        $this->assertIsArray($list['items']);
+        $this->assertItemsCollection($list);
 
         $current = $this->get("/language/$id", $headers)['result'];
         $this->assertEquals($id, $current['id']);
@@ -45,12 +43,10 @@ class LanguageTest extends TestCase
         $this->assertEquals('Professional Working', $updated['fluency']);
 
         $deleted = $this->delete("/language/$id", $headers)['result'];
-        $this->assertArrayHasKey('message', $deleted);
-        $this->assertEquals('Deleted successfully', $deleted['message']);
+        $this->assertDeletedSuccessfully($deleted);
 
         $notFound = $this->get("/language/$id", $headers)['result'];
-        $this->assertArrayHasKey('message', $notFound);
-        $this->assertEquals('404 Not Found', $notFound['message']);
+        $this->assertErrorContract($notFound, 404, 'Not Found');
 
     }//end test_language_crud_flow()
 
@@ -68,8 +64,7 @@ class LanguageTest extends TestCase
             $headers
         )['result'];
 
-        $this->assertArrayHasKey('message', $response);
-        $this->assertEquals('404 Not Found', $response['message']);
+        $this->assertErrorContract($response, 404, 'Not Found');
 
     }//end test_language_invalid_payload()
 

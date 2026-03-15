@@ -12,8 +12,7 @@ class EducationTest extends TestCase
     {
         $response = $this->post('/education', $this->getCreatePayload());
 
-        $this->assertArrayHasKey('error', $response['result']);
-        $this->assertEquals('Unauthorized', $response['result']['error']);
+        $this->assertErrorContract($response['result'], 401, 'Unauthorized');
 
     }//end test_education_requires_authentication()
 
@@ -30,8 +29,7 @@ class EducationTest extends TestCase
         $id = $created['id'];
 
         $list = $this->get('/education', $headers)['result'];
-        $this->assertArrayHasKey('items', $list);
-        $this->assertIsArray($list['items']);
+        $this->assertItemsCollection($list);
 
         $current = $this->get("/education/$id", $headers)['result'];
         $this->assertEquals($id, $current['id']);
@@ -55,12 +53,10 @@ class EducationTest extends TestCase
         $this->assertStringStartsWith('2020-09-01', $updated['startDate']);
 
         $deleted = $this->delete("/education/$id", $headers)['result'];
-        $this->assertArrayHasKey('message', $deleted);
-        $this->assertEquals('Deleted successfully', $deleted['message']);
+        $this->assertDeletedSuccessfully($deleted);
 
         $notFound = $this->get("/education/$id", $headers)['result'];
-        $this->assertArrayHasKey('message', $notFound);
-        $this->assertEquals('404 Not Found', $notFound['message']);
+        $this->assertErrorContract($notFound, 404, 'Not Found');
 
     }//end test_education_crud_flow()
 
@@ -82,8 +78,7 @@ class EducationTest extends TestCase
             $headers
         )['result'];
 
-        $this->assertArrayHasKey('message', $response);
-        $this->assertEquals('404 Not Found', $response['message']);
+        $this->assertErrorContract($response, 404, 'Not Found');
 
     }//end test_education_invalid_payload()
 

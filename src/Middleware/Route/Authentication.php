@@ -3,6 +3,7 @@
 namespace App\Middleware\Route;
 
 use App\Helper\App;
+use App\Helper\ErrorResponse;
 use App\Model\Tokens;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -56,13 +57,14 @@ class Authentication implements MiddlewareInterface
     protected function errorResponse(): ResponseInterface
     {
         $response = App::getApp()->getResponseFactory()->createResponse(401);
-        $data = ['error' => 'Unauthorized'];
-        $json = json_encode($data, JSON_THROW_ON_ERROR);
+        $requestId = ErrorResponse::createRequestId();
 
-        $response->getBody()->write($json);
-
-        return $response->withStatus(401)
-            ->withHeader('Content-Type', 'application/json');
+        return ErrorResponse::writeJson(
+            $response,
+            401,
+            ErrorResponse::messageForStatus(401),
+            $requestId
+        );
 
     }//end errorResponse()
 

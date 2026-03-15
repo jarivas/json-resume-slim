@@ -31,7 +31,6 @@ class Logger extends AbstractLogger
         if ($errorOutput !== false) {
             fwrite($errorOutput, $line);
         }
-
     }//end log()
 
 
@@ -63,3 +62,4 @@ class Logger extends AbstractLogger
 
 
 }//end class
+

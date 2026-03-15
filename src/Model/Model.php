@@ -68,20 +68,15 @@ class Model implements JsonSerializable
      */
     protected int $offset = 0;
 
-
     public static function getTableName(): string
     {
         return static::$tableName;
-
-    }//end getTableName()
-
+    }
 
     public static function getPrimaryKey(): string
     {
         return static::$primaryKey;
-
-    }//end getPrimaryKey()
-
+    }
 
     /**
      * Summary of getColumns
@@ -90,9 +85,7 @@ class Model implements JsonSerializable
     public static function getColumns(): array
     {
         return static::$columns;
-
-    }//end getColumns()
-
+    }
 
     /**
      * @param array<string, mixed>|array<int, array> $criteria
@@ -105,7 +98,6 @@ class Model implements JsonSerializable
         return (is_bool($rows) || empty($rows)) ? false : $rows[0];
 
     }//end first()
-
 
     /**
      * Summary of last
@@ -145,7 +137,6 @@ class Model implements JsonSerializable
         foreach ($criteria as $c) {
             $new->where(...$c);
         }
-
         $new->offset($offset);
         $new->limit($limit);
         $new->order($orderBy);
@@ -412,7 +403,6 @@ class Model implements JsonSerializable
 
     }//end save()
 
-
     public function insert(): void
     {
         $params     = $this->columnsToParams();
@@ -497,7 +487,6 @@ class Model implements JsonSerializable
 
     }//end toArray()
 
-
     /**
      * Summary of getCriteriaHelper
      * @param array<string, mixed>|array<int, array> $criteria
@@ -517,11 +506,7 @@ class Model implements JsonSerializable
 
         foreach ($criteria as $c) {
             if (count($c) == 2) {
-                $c = [
-                    $c[0],
-                    '=',
-                    $c[1],
-                ];
+                $c = [$c[0], '=', $c[1]];
             }
 
             $result[] = $c;
@@ -568,7 +553,6 @@ class Model implements JsonSerializable
         return $params;
 
     }//end columnsToParams()
-
 
     /**
      * @param array<int, array<mixed>> $criteria
@@ -663,3 +647,6 @@ class Model implements JsonSerializable
 
 
 }//end class
+
+
+

@@ -30,7 +30,6 @@ class Tokens extends Model
      * @var array<string> $columns
      */
     protected static array $columns = [
-
         'id',
         'token',
         'expires_at',
@@ -50,4 +49,8 @@ class Tokens extends Model
      * @var string $expires_at
      */
     public string $expires_at;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+
 }//end class
+
+

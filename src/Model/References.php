@@ -14,7 +14,7 @@ class References extends Model
     /**
      * @var string $tableName
      */
-    protected static string $tableName = '`references`';
+    protected static string $tableName = 'references';
 
     /**
      * @var string $primaryKey
@@ -30,7 +30,6 @@ class References extends Model
      * @var array<string> $columns
      */
     protected static array $columns = [
-
         'id',
         'name',
         'reference',
@@ -74,4 +73,8 @@ class References extends Model
      * @var ?string $deleted_at
      */
     public ?string $deleted_at;// phpcs:ignore Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
+
+
 }//end class
+
+
