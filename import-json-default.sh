@@ -1,0 +1,1 @@
+php commands/ImportJson.php tests/Features/fixtures/cv.json --verbose

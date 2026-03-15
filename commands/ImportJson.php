@@ -34,6 +34,14 @@ const RESUME_MODELS = [
 	Basics::class,
 ];
 
+const IMPORT_TARGET_KEYS = [
+	'work',
+	'education',
+	'certificates',
+	'skills',
+	'languages',
+];
+
 main($argv);
 
 /**
@@ -41,7 +49,7 @@ main($argv);
  */
 function main(array $argv): void
 {
-	$jsonPath = $argv[1];
+	[$jsonPath, $options] = parseArguments($argv);
 
 	if (!is_file($jsonPath)) {
 		fwrite(STDERR, "JSON file not found: {$jsonPath}\n");
@@ -49,10 +57,18 @@ function main(array $argv): void
 	}
 
 	try {
+		verboseLog($options, "Loading JSON file: {$jsonPath}");
 		$payload = readJsonFile($jsonPath);
+		verboseLog($options, 'Validating payload against jsonresume.schema.json');
 		validateResumeSchema($payload);
-		importResume($payload);
-		fwrite(STDOUT, "Import completed successfully\n");
+		importResume($payload, $options);
+
+		if ($options['dryRun'] === true) {
+			fwrite(STDOUT, "Dry-run completed successfully (no database changes applied)\n");
+		} else {
+			fwrite(STDOUT, "Import completed successfully\n");
+		}
+
 		exit(0);
 	} catch (Throwable $exception) {
 		fwrite(STDERR, $exception->getMessage() . "\n");
@@ -60,6 +76,68 @@ function main(array $argv): void
 	}
 
 }//end main()
+
+
+/**
+ * @param array<int, string> $argv
+ * @return array{0:string,1:array{verbose:bool,dryRun:bool}}
+ */
+function parseArguments(array $argv): array
+{
+	$args = $argv;
+	array_shift($args);
+
+	$options = [
+		'verbose' => false,
+		'dryRun' => false,
+	];
+
+	$jsonPath = null;
+
+	foreach ($args as $arg) {
+		switch ($arg) {
+			case '--verbose':
+			case '-v':
+				$options['verbose'] = true;
+				break;
+			case '--dry-run':
+				$options['dryRun'] = true;
+				break;
+			default:
+				if (str_starts_with($arg, '-')) {
+					throw new RuntimeException("Unknown option: {$arg}");
+				}
+
+				if ($jsonPath !== null) {
+					throw new RuntimeException('Only one JSON file path is allowed');
+				}
+
+				$jsonPath = $arg;
+				break;
+		}
+	}
+
+	if ($jsonPath === null) {
+		throw new RuntimeException('Usage: php commands/ImportJson.php <resume.json> [--verbose|-v] [--dry-run]');
+	}
+
+	return [$jsonPath, $options];
+
+}//end parseArguments()
+
+
+/**
+ * @param array{verbose:bool,dryRun:bool} $options
+ */
+function verboseLog(array $options, string $message): void
+{
+	if ($options['verbose'] === false) {
+		return;
+	}
+
+	fwrite(STDOUT, "[verbose] {$message}\n");
+
+}//end verboseLog()
 
 
 /**
@@ -126,12 +204,26 @@ function validateResumeSchema(array $payload): void
 
 /**
  * @param array<string, mixed> $payload
+ * @param array{verbose:bool,dryRun:bool} $options
  */
-function importResume(array $payload): void
+function importResume(array $payload, array $options): void
 {
-	clearResumeModels();
+	verboseLog($options, 'Preparing import targets');
+	clearResumeModels($options);
+
+	if ($options['dryRun'] === true) {
+		validateBasicsSection($payload['basics'] ?? null);
+		$basicId = Ulid::generate()->__toString();
+		verboseLog($options, "Dry-run basics id: {$basicId}");
+		verboseLog(
+			$options,
+			'Planned rows by section: ' . json_encode(summarizePlannedRows($payload), JSON_THROW_ON_ERROR)
+		);
+		return;
+	}
 
 	$basicId = importBasics($payload['basics'] ?? null);
+	verboseLog($options, "Resolved basics id: {$basicId}");
 
 	importWorks($basicId, $payload['work'] ?? null);
 	importEducations($basicId, $payload['education'] ?? null);
@@ -139,16 +231,41 @@ function importResume(array $payload): void
 	importSkills($basicId, $payload['skills'] ?? null);
 	importLanguages($basicId, $payload['languages'] ?? null);
 
+	verboseLog($options, 'Database write phase completed');
+
 }//end importResume()
 
 
-function clearResumeModels(): void
+/**
+ * @param null|mixed $basics
+ */
+function validateBasicsSection(mixed $basics): void
 {
+	if (!is_array($basics)) {
+		throw new RuntimeException('Missing basics section in resume JSON');
+	}
+
+}//end validateBasicsSection()
+
+
+/**
+ * @param array{verbose:bool,dryRun:bool} $options
+ */
+function clearResumeModels(array $options): void
+{
+	if ($options['dryRun'] === true) {
+		verboseLog($options, 'Dry-run active: skipping deletion of existing rows');
+		return;
+	}
+
 	foreach (RESUME_MODELS as $modelClass) {
 		$rows = $modelClass::get([], 0, 10000);
 		if (is_bool($rows)) {
+			verboseLog($options, "No rows found for {$modelClass}");
 			continue;
 		}
+
+		verboseLog($options, sprintf('Deleting %d rows from %s', count($rows), $modelClass));
 
 		foreach ($rows as $row) {
 			if ($row instanceof Model) {
@@ -161,13 +278,43 @@ function clearResumeModels(): void
 
 
 /**
+ * @param array<string, mixed> $payload
+ * @return array<string, int>
+ */
+function summarizePlannedRows(array $payload): array
+{
+	$summary = [
+		'basics' => is_array($payload['basics'] ?? null) ? 1 : 0,
+	];
+
+	foreach (IMPORT_TARGET_KEYS as $key) {
+		$items = $payload[$key] ?? null;
+		if (!is_array($items)) {
+			$summary[$key] = 0;
+			continue;
+		}
+
+		$total = 0;
+		foreach ($items as $item) {
+			if (is_array($item)) {
+				$total++;
+			}
+		}
+
+		$summary[$key] = $total;
+	}
+
+	return $summary;
+
+}//end summarizePlannedRows()
+
+
+/**
  * @param null|mixed $basics
  */
 function importBasics(mixed $basics): string
 {
-	if (!is_array($basics)) {
-		throw new RuntimeException('Missing basics section in resume JSON');
-	}
+	validateBasicsSection($basics);
 
 	$id = Ulid::generate()->__toString();
 

@@ -86,12 +86,65 @@ class ImportJsonCommandTest extends TestCase
     }//end test_importjson_fails_with_invalid_schema_payload()
 
 
-    private function runImportCommand(string $jsonPath): array
+    public function test_importjson_dry_run_does_not_persist_rows(): void
     {
+        $jsonPath = getRootPath() . '/tests/Features/fixtures/cv.json';
+
+        $result = $this->runImportCommand($jsonPath, ['--dry-run']);
+
+        $this->assertSame(0, $result['exitCode'], implode(PHP_EOL, $result['output']));
+        $this->assertStringContainsString(
+            'Dry-run completed successfully (no database changes applied)',
+            implode(PHP_EOL, $result['output'])
+        );
+
+        $pdo = $this->getPdo();
+
+        $this->assertSame(0, $this->countRows($pdo, 'basics'));
+        $this->assertSame(0, $this->countRows($pdo, 'works'));
+        $this->assertSame(0, $this->countRows($pdo, 'educations'));
+        $this->assertSame(0, $this->countRows($pdo, 'certificates'));
+        $this->assertSame(0, $this->countRows($pdo, 'skills'));
+        $this->assertSame(0, $this->countRows($pdo, 'languages'));
+
+    }//end test_importjson_dry_run_does_not_persist_rows()
+
+
+    public function test_importjson_verbose_writes_debug_output(): void
+    {
+        $jsonPath = getRootPath() . '/tests/Features/fixtures/cv.json';
+
+        $result = $this->runImportCommand($jsonPath, ['--dry-run', '--verbose']);
+
+        $this->assertSame(0, $result['exitCode'], implode(PHP_EOL, $result['output']));
+        $this->assertStringContainsString(
+            '[verbose] Loading JSON file:',
+            implode(PHP_EOL, $result['output'])
+        );
+        $this->assertStringContainsString(
+            '[verbose] Planned rows by section:',
+            implode(PHP_EOL, $result['output'])
+        );
+
+    }//end test_importjson_verbose_writes_debug_output()
+
+
+    /**
+     * @param array<int, string> $options
+     */
+    private function runImportCommand(string $jsonPath, array $options=[]): array
+    {
+        $optionArgs = '';
+        if ($options !== []) {
+            $escaped = array_map(static fn (string $option): string => escapeshellarg($option), $options);
+            $optionArgs = ' ' . implode(' ', $escaped);
+        }
+
         $command = sprintf(
-            'php %s %s 2>&1',
+            'php %s %s%s 2>&1',
             escapeshellarg(getRootPath() . '/commands/ImportJson.php'),
-            escapeshellarg($jsonPath)
+            escapeshellarg($jsonPath),
+            $optionArgs
         );
 
         $output = [];

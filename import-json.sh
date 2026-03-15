@@ -1,0 +1,1 @@
+php commands/ImportJson.php "$@"
